@@ -1,0 +1,11 @@
+# GraphML to Neo4J Migration Requirements
+# 用于迁移脚本的额外依赖包
+
+# 图数据处理
+networkx>=3.0
+
+# Neo4J 数据库连接
+neo4j>=5.0.0
+
+# 进度条显示
+tqdm>=4.64.0 

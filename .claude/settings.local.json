@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker logs:*)",
+      "Bash(find:*)",
+      "Bash(docker exec:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": []
+  }
+}

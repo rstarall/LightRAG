@@ -41,19 +41,19 @@ class MilvusVectorDBStorage(BaseVectorStorage):
                 FieldSchema(
                     name="entity_name",
                     dtype=DataType.VARCHAR,
-                    max_length=256,
+                    max_length=512,  # 增加到 512
                     nullable=True,
                 ),
                 FieldSchema(
                     name="entity_type",
                     dtype=DataType.VARCHAR,
-                    max_length=64,
+                    max_length=128,  # 增加到 128
                     nullable=True,
                 ),
                 FieldSchema(
                     name="file_path",
                     dtype=DataType.VARCHAR,
-                    max_length=512,
+                    max_length=2048,  # 从512增加到2048
                     nullable=True,
                 ),
             ]
@@ -71,7 +71,7 @@ class MilvusVectorDBStorage(BaseVectorStorage):
                 FieldSchema(
                     name="file_path",
                     dtype=DataType.VARCHAR,
-                    max_length=512,
+                    max_length=2048,  # 从512增加到2048
                     nullable=True,
                 ),
             ]
@@ -88,7 +88,7 @@ class MilvusVectorDBStorage(BaseVectorStorage):
                 FieldSchema(
                     name="file_path",
                     dtype=DataType.VARCHAR,
-                    max_length=512,
+                    max_length=2048,  # 从512增加到2048
                     nullable=True,
                 ),
             ]
@@ -100,7 +100,7 @@ class MilvusVectorDBStorage(BaseVectorStorage):
                 FieldSchema(
                     name="file_path",
                     dtype=DataType.VARCHAR,
-                    max_length=512,
+                    max_length=2048,  # 从512增加到2048
                     nullable=True,
                 ),
             ]
@@ -752,8 +752,24 @@ class MilvusVectorDBStorage(BaseVectorStorage):
         embeddings = np.concatenate(embeddings_list)
         for i, d in enumerate(list_data):
             d["vector"] = embeddings[i]
-        results = self._client.upsert(collection_name=self.namespace, data=list_data)
-        return results
+        
+        # Batch upsert to avoid gRPC message size limit
+        MILVUS_BATCH_SIZE = 1000  # Adjust this value based on your data size
+        total_inserted = 0
+        
+        for i in range(0, len(list_data), MILVUS_BATCH_SIZE):
+            batch = list_data[i:i + MILVUS_BATCH_SIZE]
+            try:
+                batch_results = self._client.upsert(collection_name=self.namespace, data=batch)
+                total_inserted += len(batch)
+                logger.debug(f"Inserted batch {i//MILVUS_BATCH_SIZE + 1}, size: {len(batch)}, total: {total_inserted}/{len(list_data)}")
+            except Exception as e:
+                logger.error(f"Failed to insert batch {i//MILVUS_BATCH_SIZE + 1}: {e}")
+                # You might want to implement retry logic here
+                raise
+        
+        logger.info(f"Successfully inserted {total_inserted} vectors to {self.namespace}")
+        return {"insert_count": total_inserted}
 
     async def query(
         self, query: str, top_k: int, ids: list[str] | None = None

@@ -22,5 +22,5 @@ database = your_database
 workspace = default  # 可选,默认为default
 max_connections = 12
 
-[memgraph]
-uri = bolt://localhost:7687
+# PostgreSQL 配置 (推荐用于生产环境)
+# 使用专用的 RAG 镜像，预装 Apache AGE 扩展

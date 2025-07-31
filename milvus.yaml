@@ -1,0 +1,20 @@
+# Milvus 配置文件
+# 用于增加 gRPC 消息大小限制
+
+proxy:
+  grpc:
+    serverMaxSendSize: 536870912  # 512MB (原默认值 256MB)
+    serverMaxRecvSize: 536870912  # 512MB (原默认值 64MB)
+    clientMaxSendSize: 536870912  # 512MB (原默认值 256MB)
+    clientMaxRecvSize: 536870912  # 512MB (原默认值 64MB)
+
+# 其他组件的限制也可以调整
+queryNode:
+  grpc:
+    serverMaxRecvSize: 536870912  # 512MB
+    serverMaxSendSize: 536870912  # 512MB
+
+dataNode:
+  grpc:
+    serverMaxRecvSize: 536870912  # 512MB
+    serverMaxSendSize: 536870912  # 512MB

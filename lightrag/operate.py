@@ -1087,6 +1087,7 @@ async def _merge_edges_then_upsert(
         keywords=keywords,
         source_id=source_id,
         file_path=file_path,
+        weight=weight,  # 添加这一行
         created_at=int(time.time()),
     )
 
@@ -1220,6 +1221,7 @@ async def merge_nodes_and_edges(
                     "content": f"{dp['src_id']}\t{dp['tgt_id']}\n{dp['keywords']}\n{dp['description']}",
                     "source_id": dp["source_id"],
                     "file_path": dp.get("file_path", "unknown_source"),
+                    "weight": dp["weight"],  # 添加这一行
                 }
                 for dp in relationships_data
             }

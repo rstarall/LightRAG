@@ -63,9 +63,15 @@ class MemgraphStorage(BaseGraphStorage):
             "MEMGRAPH_DATABASE", config.get("memgraph", "database", fallback="memgraph")
         )
 
+        # 当用户名和密码都为空时，使用无认证连接
+        if USERNAME or PASSWORD:
+            auth = (USERNAME, PASSWORD)
+        else:
+            auth = None
+        
         self._driver = AsyncGraphDatabase.driver(
             URI,
-            auth=(USERNAME, PASSWORD),
+            auth=auth,
         )
         self._DATABASE = DATABASE
         try:
